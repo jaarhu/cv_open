@@ -1,3 +1,3 @@
  #!/bin/sh
 cd ./eye_detect
-./nose_detect2.py
+./eye_detect3.py
