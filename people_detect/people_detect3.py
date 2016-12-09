@@ -54,12 +54,14 @@ while True:
         cv2.imwrite('detect.jpg', image)
         
         # If the `q` key was pressed, break from the loop        
-        cv2.waitKey(0)
-        print("Press 'q' now to quit")
-        time.sleep(1)
+        print("!!! Press 'q' now to quit")
+        time.sleep(2)
         # If the `q` key was pressed, break from the loop
         if cv2.waitKey(1) & 0xFF == ord("q"):
                 break
+        else:
+                print("---> Press any key for the following video frame acquisition")
+                cv2.waitKey(0)
 
 # Close any open windows
 cv2.destroyAllWindows()
