@@ -1,2 +1,2 @@
 #!/bin/sh
-python people_detect.py --images images
+python people_detect_image.py --images images

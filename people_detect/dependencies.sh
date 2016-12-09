@@ -1,4 +1,4 @@
 #!/bin/sh
-pip install imutils
+sudo pip install imutils
 # If already installed, make sure you have at least version v0.3.1
-pip install --upgrade imutils
+sudo pip install --upgrade imutils
