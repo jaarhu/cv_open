@@ -15,11 +15,6 @@ ap.add_argument("-v", "--video", help="path to the video file")
 ap.add_argument("-a", "--min-area", type=int, default=500, help="minimum area size")
 args = vars(ap.parse_args())
 
-
-y_a=240
-a=0
-coordenadas_ant=[0,0,0,0]
-
 ## Inicialize camera
 camera = PiCamera()
 #camera.resolution = (320 , 240)
@@ -39,10 +34,14 @@ firstFrame = None
 
 # loop over the frames of the video
 while True:
-	# grab the current frame and initialize the occupied/unoccupied
+        	# grab the current frame and initialize the occupied/unoccupied
 	rawCapture = PiRGBArray(camera)
 	camera.capture(rawCapture , format="bgr")
 	frame = rawCapture.array
+	# grab the current frame and initialize the occupied/unoccupied
+	# text
+	#(grabbed, frame) = camera.read()
+	text = "Unoccupied"
 
 	# if the frame could not be grabbed, then we have reached the end
 	# of the video
@@ -58,11 +57,12 @@ while True:
 	if firstFrame is None:
 		firstFrame = gray
 		continue
+
 	# compute the absolute difference between the current frame and
 	# first frame
 	frameDelta = cv2.absdiff(firstFrame, gray)
 	thresh = cv2.threshold(frameDelta, 25, 255, cv2.THRESH_BINARY)[1]
-	firstFrame=gray
+
 	# dilate the thresholded image to fill in holes, then find contours
 	# on thresholded image
 	thresh = cv2.dilate(thresh, None, iterations=2)
@@ -71,26 +71,21 @@ while True:
 
 	# loop over the contours
 	for c in cnts:
-		
 		# if the contour is too small, ignore it
-		if cv2.contourArea(c) < 8000:
+		if cv2.contourArea(c) < args["min_area"]:
 			continue
-		a=1
+
 		# compute the bounding box for the contour, draw it on the frame,
 		# and update the text
 		(x, y, w, h) = cv2.boundingRect(c)
-		if(y_a>=y):
-			coordenadas=cv2.boundingRect(c)
-		
-	if a==1 and coordenadas_ant != coordenadas:
-		(x,y,w,h) = coordenadas
-		coordenadas_ant=coordenadas
 		cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
-		#print "rectangulo:",x,w,y,h
-		cord_x=x+w/2
-		cord_y=y+h/4
-		print "movimiento en:",cord_x,cord_y
-		cv2.rectangle(frame, (cord_x, cord_y), (cord_x + 2, cord_y + 2), (255, 0, 0), 2)
+		text = "Occupied"
+
+	# draw the text and timestamp on the frame
+	cv2.putText(frame, "Room Status: {}".format(text), (10, 20),
+		cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+	cv2.putText(frame, datetime.datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"),
+		(10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 255), 1)
 
 	# show the frame and record if the user presses a key
 	cv2.imshow("Security Feed", frame)

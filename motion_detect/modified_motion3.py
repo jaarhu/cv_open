@@ -45,7 +45,7 @@ while 1:
 	# dilate the thresholded image to fill in holes, then find contours
 	# on thresholded image
 	thresh = cv2.dilate(thresh, None, iterations=2)
-	(cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
+	(_,cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
 		cv2.CHAIN_APPROX_SIMPLE)
 
 	# loop over the contours
@@ -87,6 +87,5 @@ while 1:
 	if key == ord("q"):
 		break
 
-# cleanup the camera and close any open windows
-camera.release()
+# close any open windows
 cv2.destroyAllWindows()
